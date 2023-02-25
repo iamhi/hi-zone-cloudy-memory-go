@@ -4,11 +4,12 @@
 
 * Storing data
 * Retrieving data
+* Getting all paths 
+* Deleting a path
 
 ### TODO:
 
 * Add swagger
-* Feature for finding keys
 * Learn if interfaces should be added
 * Code structrue improvement
 

@@ -24,17 +24,37 @@ func StartUp() {
 	fmt.Println("Booting up RedisClient on hostname/port", redisconfig.GetAddress(), "/", redisconfig.GetPassword())
 }
 
-func GetValue(path string) string {
-	value, err := rdb.Get(ctx, path).Result()
+func GetValue(hash string, key string) string {
+	value, err := rdb.HGet(ctx, hash, key).Result()
 
 	if err != nil {
+		fmt.Println("Error while getting data for hast/path", hash, key)
+		fmt.Println(err)
 		return ""
 	}
 
 	return value 
 }
 
-func SetValue(path string, value string) {
-	rdb.Set(ctx, path, value, 0).Err()
+func SetValue(hash string, key string, value string) {
+	err := rdb.HSet(ctx, hash, key, value).Err()
+
+	if err != nil {
+		fmt.Println("Error while storing for hash/key", hash, key)
+		fmt.Println(err)
+	}
 }
 
+func DeleteValue(hash string, key string) {
+	rdb.HDel(ctx, hash, key)
+}
+
+func GetKeys(hash string) []string {	
+	keys, err := rdb.HKeys(ctx, hash).Result()
+	
+	if err != nil {
+		return make([]string, 0)
+	}
+
+	return keys
+}

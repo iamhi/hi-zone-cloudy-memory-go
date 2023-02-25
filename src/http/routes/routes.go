@@ -60,6 +60,44 @@ func postData(ctx *gin.Context) {
 	ctx.String(http.StatusOK, "OK")
 }
 
+func getPaths(ctx *gin.Context) {
+	access_token := getToken(ctx)
+
+	user_data, user_data_error := userservice.GetUserData(access_token)
+
+	if user_data_error != nil {
+		ctx.String(http.StatusBadRequest, user_data_error.Error())
+		return
+	}
+
+	user_paths := dataservice.GetPaths(user_data)
+
+  ctx.IndentedJSON(http.StatusOK, user_paths)
+}
+
+func deleteData(ctx *gin.Context) {
+	access_token := getToken(ctx)
+	path, query_param_exists := ctx.GetQuery(pathQueryParam)
+
+	if !query_param_exists {
+		ctx.String(http.StatusBadRequest, "Empty path")
+
+		return
+	}
+
+	user_data, user_data_error := userservice.GetUserData(access_token)
+
+	if user_data_error != nil {
+		ctx.String(http.StatusBadRequest, user_data_error.Error())
+		return
+	}
+
+	stored_user_data := dataservice.DeletePath(user_data, path)
+
+  ctx.IndentedJSON(http.StatusOK, stored_user_data)
+}
+
+
 func Setup() {
 	fmt.Println("Setting routes")
 
@@ -67,6 +105,8 @@ func Setup() {
 	
 	router.GET(endpoint_prefix, getData)
 	router.POST(endpoint_prefix, postData)
+	router.DELETE(endpoint_prefix, deleteData)
+	router.GET(endpoint_prefix + "/paths", getPaths)
 
 	router.Run("localhost:8080")
 
