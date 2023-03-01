@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/iamhi/cloudy-memory-go/src/core/dataservice"
 	"github.com/iamhi/cloudy-memory-go/src/core/userservice"
@@ -102,6 +103,13 @@ func Setup() {
 	fmt.Println("Setting routes")
 
   router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+		AllowCredentials: true,
+		AllowHeaders: []string{ "Content-Type", "Accept", "User-Agent" },
+		AllowMethods: []string{ "POST", "GET", "DELETE" },
+		AllowAllOrigins: true,
+	}))
 	
 	router.GET(endpoint_prefix, getData)
 	router.POST(endpoint_prefix, postData)
