@@ -108,7 +108,8 @@ func Setup() {
 		AllowCredentials: true,
 		AllowHeaders: []string{ "Content-Type", "Accept", "User-Agent" },
 		AllowMethods: []string{ "POST", "GET", "DELETE" },
-		AllowAllOrigins: true,
+		AllowOrigins: []string{ "*" },
+		AllowWildcard: true, 
 	}))
 	
 	router.GET(endpoint_prefix, getData)
