@@ -108,8 +108,8 @@ func Setup() {
 		AllowCredentials: true,
 		AllowHeaders: []string{ "Content-Type", "Accept", "User-Agent" },
 		AllowMethods: []string{ "POST", "GET", "DELETE" },
-		AllowOrigins: []string{ "*" },
-		AllowWildcard: true, 
+		AllowOrigins: []string{  "http://localhost:3000", "https://api.ibeenhi.com" },
+		AllowWildcard: true,
 	}))
 	
 	router.GET(endpoint_prefix, getData)
