@@ -16,7 +16,7 @@ func getData(ctx *gin.Context) {
 	access_token := getToken(ctx)
 	path, query_param_exists := ctx.GetQuery(pathQueryParam)
 
-	if !query_param_exists {
+	if !query_param_exists || path == "" {
 		ctx.String(http.StatusBadRequest, "Empty path")
 
 		return
