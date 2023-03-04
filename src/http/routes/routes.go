@@ -108,7 +108,7 @@ func Setup() {
 		AllowCredentials: true,
 		AllowHeaders: []string{ "Content-Type", "Accept", "User-Agent" },
 		AllowMethods: []string{ "POST", "GET", "DELETE" },
-		AllowOrigins: []string{  "http://localhost:3000", "https://api.ibeenhi.com" },
+		AllowOrigins: []string{ "http://localhost:3000", "https://api.ibeenhi.com", "https://hi-zone.ibeenhi.com" },
 		AllowWildcard: true,
 	}))
 	
