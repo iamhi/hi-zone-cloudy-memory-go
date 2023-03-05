@@ -35,6 +35,8 @@ func StartAuthenticationService() {
 
 	scheduler.Every(10).Minutes().Do(getNewTokens)
 
+	scheduler.StartAsync()
+
 	fmt.Println("Authentication service started")
 }
 
