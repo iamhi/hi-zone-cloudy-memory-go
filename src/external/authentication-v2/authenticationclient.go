@@ -4,19 +4,18 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/iamhi/cloudy-memory-go/config/authenticationconfig"
 )
 
-var application_json_media_type = "application/json"
+const application_json_media_type = "application/json"
 
-func MakeLoginRequest(login_request LoginRequest) LoginResult {
+func MakeLoginRequest(login_request LoginRequest) (LoginResult, error) {
 	login_request_json, marshal_error := json.Marshal(login_request)
 
 	if marshal_error != nil {
-		log.Fatal(marshal_error)
+		return LoginResult{}, fmt.Errorf("Error marshaling the request")
 	}
 
 	login_response, login_error := http.Post(
@@ -25,7 +24,9 @@ func MakeLoginRequest(login_request LoginRequest) LoginResult {
 		bytes.NewBuffer(login_request_json)) 
 
 	if login_error != nil {
-		log.Fatal(login_error)
+		fmt.Println(login_error)
+
+		return LoginResult{}, fmt.Errorf("Error connectin to authentication service")
 	}
 
 	var login_result LoginResult
@@ -33,19 +34,25 @@ func MakeLoginRequest(login_request LoginRequest) LoginResult {
 	decoding_error := json.NewDecoder(login_response.Body).Decode(&login_result)
 
 	if decoding_error != nil {
-		log.Fatal(decoding_error);
+		// TODO: Log the error message or the response body as string
+		return LoginResult{}, fmt.Errorf("Error decoing the response from authentication service")
 	}
 
-	return login_result
+	return login_result, nil
 }
 
 func StartUp() {
 	fmt.Println("Booting authentication client")
 
-	login_result := MakeLoginRequest(LoginRequest{
+	login_result, err := MakeLoginRequest(LoginRequest{
 		authenticationconfig.GetServiceUsername(),
 		authenticationconfig.GetServicePassword(),
 	})
+
+	if err != nil {
+		// Should I crash here?
+		fmt.Println("Unable to logn", err)
+	}
 
 	fmt.Println(login_result)
 }
@@ -54,7 +61,7 @@ func MakeDecodeRequest (decode_request DecodeRequest, access_token string) (Deco
 	decode_request_json, marshal_error := json.Marshal(decode_request)
 
 	if marshal_error != nil {
-		log.Fatal(marshal_error)
+		return DecodeResult{}, fmt.Errorf("Unable to marshal the decode request")
 	}
 
 	decode_response, decode_error := http.Post(
@@ -63,7 +70,7 @@ func MakeDecodeRequest (decode_request DecodeRequest, access_token string) (Deco
 			bytes.NewBuffer(decode_request_json))
 	
 	if decode_error != nil {
-		log.Fatal(decode_error)
+		return DecodeResult{}, fmt.Errorf("Error while requesting decode")
 	}
 
 	if decode_response.StatusCode == http.StatusBadRequest {
@@ -75,7 +82,7 @@ func MakeDecodeRequest (decode_request DecodeRequest, access_token string) (Deco
 	decoding_error := json.NewDecoder(decode_response.Body).Decode(&decode_result)
 
 	if decoding_error != nil {
-		log.Fatal(decoding_error)
+		return DecodeResult{}, fmt.Errorf("Error while gettin response from decode requesting")
 	}
 
 	return decode_result, nil

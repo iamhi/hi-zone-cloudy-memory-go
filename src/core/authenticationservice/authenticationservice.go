@@ -16,10 +16,15 @@ var refresh_token string
 
 func getNewTokens() {
 	fmt.Println("Getting new tokens")
-	login_result := authenticationv2.MakeLoginRequest(authenticationv2.LoginRequest{
+	login_result, err := authenticationv2.MakeLoginRequest(authenticationv2.LoginRequest{
 		Username: authenticationconfig.GetServiceUsername(),
 		Password: authenticationconfig.GetServicePassword(),
 	})
+
+	if err != nil {
+		fmt.Println("Unable to login", err)
+		return;
+	}
 
 	access_token = login_result.AccessToken
 	refresh_token = login_result.RefreshToken
